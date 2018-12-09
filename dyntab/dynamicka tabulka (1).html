@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<head>
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<title>GlobalLogic</title>
+	<style type="text/css">
+		
+
+
+		#mainDiv,#tabulka{
+  			border-width: 2px;
+			border-style: solid;
+			width: 600px;
+			margin: auto;
+			padding-top: 20px;
+			font-family: 'Roboto';
+    src: url('Roboto-ThinItalic-webfont.eot');
+    src: url('Roboto-ThinItalic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('Roboto-ThinItalic-webfont.woff') format('woff'),
+         url('Roboto-ThinItalic-webfont.ttf') format('truetype'),
+         url('Roboto-ThinItalic-webfont.svg#RobotoThinItalic') format('svg'); (under the Apache Software License). 
+    font-weight: 280;
+    font-style: italic;
+		}
+
+		#mainDiv{
+		border-style: solid;
+  		border-width: 5px;
+
+		background:#ff8928;
+		border-radius:20px;
+
+		}
+
+		td{
+			padding-left: 5px;
+		}
+		
+		#tlacitko{
+			width: 60px;
+		
+		}
+		
+		input[type="text"],[type="number"]{
+			width: 130px;
+		}
+		
+		#tabulka table {
+
+			width: 600px;
+
+		}
+		
+		h1{
+			text-align: center;
+			color: #10473b;
+		}
+
+		#btn1,#btn2 {
+
+		margin-top:20px;
+		padding: 20px;
+background:#ff8928;
+		}
+
+		#btn2 {
+
+		margin-left:384px;
+
+
+		}
+
+
+	</style>
+
+</head>
+<body>
+	<div id="mainDiv">
+		<table>
+			<tr align="center">
+				<td><label>Name: </label></td>
+				<td><label>Surname: </label></td>
+				<td><label>Age: </label></td>
+				<td><label>Gender: </label></td>
+				<td rowspan="2"> <button id="tlacitko" onclick="sendData()" disabled>ADD</button></td>
+			</tr>
+			<tr>
+				<td><input type="text" id="meno" onchange="check()"></td>
+				<td><input type="text" id="priezvisko" onchange="check()"></td>
+				<td><input type="number" id="vek" onchange="check()"></td>
+				<td><input type="radio" id="male" name="pohlavie" value="M" onchange="check()">Male <br>
+					<input type="radio" id="female" name="pohlavie" value="F" onchange="check()">Female <br>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<div id="tabulka">
+		<table class="result" id="resultTab">
+			<thead>
+			<tr>
+				<th>Id</th>
+				<th onclick="sortLetter()">Name</th>
+				<th onclick="sortLetter2()">Surname</th>
+				<th onclick="sortAge()">Age</th>
+				<th>Gender</th>
+				<th>Delete</th>
+			</tr>
+			</thead>
+			<tbody id="autoContent"></tbody>
+		</table>
+
+	<button id="btn1">Save Data</button>
+	<button id="btn2">Load Data</button>
+
+	</div>
+
+<script type="text/javascript">
+		let count =0;
+		let persons = [];
+
+
+
+		
+		function check(){
+			if (checkText("meno") && checkText("priezvisko") && checkAge("vek") && checkGender()) { 
+				document.getElementById("tlacitko").disabled = false;
+			} else {
+				document.getElementById("tlacitko").disabled = true;
+			}
+
+		}
+
+		
+		function checkText(nazov){
+			if(document.getElementById(nazov).value.length>1){
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+
+		
+		function checkGender(){
+			if (document.getElementById("male").checked == true || document.getElementById("female").checked == true) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		
+
+
+
+		function checkAge(){
+			if (document.getElementById("vek").value>0) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+
+
+		function sendData() {
+			count++;
+			let fn=document.getElementById('meno').value;
+			let ln=document.getElementById('priezvisko').value;
+			let v=document.getElementById('vek').value;
+			let p;
+			if(document.getElementsByName('pohlavie')[0].checked)
+				 p='M';
+			if(document.getElementsByName('pohlavie')[1].checked)
+				p='F';
+			console.log(fn,ln,v,p);
+
+			let person = {
+				id:count,
+				fname: fn,
+				lname: ln,
+				age: v,
+				gender: p
+			};
+
+			persons.push(person);
+
+
+			//vykreslenie tabulky
+
+			renderTable(person);
+			}
+			const deletePerson=(id)=>{
+				console.log(id);
+				let index=persons.findIndex(x => x.id===id);
+				console.log(index);
+				persons.splice(index,1);
+				console.log(persons);
+				$('#autoContent').empty();
+				persons.map(x=>{
+					renderTable(x);
+					console.log(x);
+				});
+				
+			}
+
+
+			//nefungujuci hover :(
+			const renderTable = (person) =>{
+			let col0=$('<td>').text(person.id).			hover(function() {
+   				$(this).parent().addClass('hover');
+				}, function() {
+   				 $(this).parent().removeClass('hover');
+	});;
+			let col1=$('<td>').text(person.fname).			hover(function() {
+   				$(this).parent().addClass('hover');
+				}, function() {
+   				 $(this).parent().removeClass('hover');
+	});;
+			let col2=$('<td>').text(person.lname).			hover(function() {
+   				$(this).parent().addClass('hover');
+				}, function() {
+   				 $(this).parent().removeClass('hover');
+	});;
+			let col3=$('<td>').text(person.age).			hover(function() {
+   				$(this).parent().addClass('hover');
+				}, function() {
+   				 $(this).parent().removeClass('hover');
+	});;
+			let col4=$('<td>');
+			if(person.gender=='M')
+				col4.text('Male');
+			else if(person.gender=='F')
+				col4.text('Female');
+			else if(person.gender=='')
+				col4.text('Undefined');
+			let col5=$('<td>');
+
+			let text='deletePerson('+person.id+')';
+			let image=$('<img>').attr('src','delete.png').attr('onclick', text);
+			col5.append(image);
+
+
+			let row=$('<tr>');
+			row.append(col0);
+			row.append(col1);
+			row.append(col2);
+			row.append(col3);
+			row.append(col4);
+			row.append(col5);
+
+			$('#resultTab').append(row);
+			
+
+			$('#meno').val('');
+			$('#priezvisko').val('');
+			$('#vek').val('');
+
+			if(document.getElementsByName('pohlavie')[0].checked)
+				 document.getElementsByName("pohlavie")[0].checked = false;
+			if(document.getElementsByName('pohlavie')[1].checked)
+				document.getElementsByName("pohlavie")[1].checked = false;
+		
+		}
+
+		$('#btn1').click( ()=>{
+
+			if(typeof(Storage) !== "Undefined"){
+			let text=JSON.stringify(persons);
+			localStorage.setItem("persons",text);
+		}
+
+			});
+
+		$('#btn2').click( ()=>{
+			if(typeof(Storage) !== "Undefined"){
+			let text=localStorage.getItem("persons");
+			persons=JSON.parse(text);
+			$('#autoContent').empty();
+			persons.map(x =>{
+				renderTable(x);
+			})
+		}
+
+			});
+
+		//triedenie podla veku
+	  function sortAge(){
+
+       persons.sort( (a,b)=> {
+         let n1=parseInt(a.age);
+         let n2=parseInt(b.age);
+         if (n1 < n2) {return -1;}
+         if (n1 > n2) {return 1;}
+         return 0;
+      
+       });
+        
+         $('#autoContent').empty();
+       persons.map( x => {
+         renderTable(x);
+       
+       });
+     }
+
+     //triedenie firstname
+     function sortLetter(){
+       
+       persons.sort( (a,b)=> {
+        if(a.fname < b.fname) 
+        { return -1; }
+
+    	else 
+
+    	{ return 1; }
+
+       });
+        
+         $('#autoContent').empty();
+       persons.map( x => {
+      
+         renderTable(x);
+       
+       });
+     }
+
+     //triedenie podla lastname
+     function sortLetter2(){
+       
+       persons.sort( (a,b)=> {
+        if(a.fname < b.fname) 
+        { return -1; }
+
+    	else 
+
+    	{ return 1; }
+
+       });
+        
+         $('#autoContent').empty();
+       persons.map( x => {
+      
+         renderTable(x);
+       
+       });
+     }
+
+
+     				hover(function() {
+   				$(this).addClass('hover');
+				}, function() {
+   				 $(this).removeClass('hover');
+	});
+
+
+		
+	</script>
+</body>
+</html>
